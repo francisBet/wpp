@@ -1,12 +1,17 @@
 import express from "express";
 import { exec } from "child_process";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.send("Railway Terminal API is running!");
-});
+// Para __dirname funcionar em ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Servir arquivos estáticos em ./public (nosso index.html)
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/exec", (req, res) => {
   const command = req.query.cmd;
