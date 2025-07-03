@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Railway Web Terminal</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      margin: 0;
+      padding: 20px;
+    }
+    #terminal {
+      background: #000;
+      padding: 10px;
+      height: 70vh;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      border: 1px solid #555;
+      margin-bottom: 10px;
+    }
+    #commandInput {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      outline: none;
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Railway Terminal</h1>
+  <div id="terminal"></div>
+  <input id="commandInput" type="text" placeholder="Type a command and press Enter" autofocus />
+  <script>
+    const terminal = document.getElementById("terminal");
+    const commandInput = document.getElementById("commandInput");
+
+    commandInput.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const cmd = commandInput.value.trim();
+        if (!cmd) return;
+        terminal.innerHTML += `\n$ ${cmd}\n`;
+        terminal.scrollTop = terminal.scrollHeight;
+        commandInput.value = "";
+
+        try {
+          const res = await fetch(`/exec?cmd=${encodeURIComponent(cmd)}`);
+          const output = await res.text();
+          terminal.innerHTML += output + "\n";
+          terminal.scrollTop = terminal.scrollHeight;
+        } catch (err) {
+          terminal.innerHTML += `Error fetching command output.\n`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
